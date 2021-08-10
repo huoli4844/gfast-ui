@@ -1,6 +1,22 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+      <el-form-item label="应用系统" prop="appId">
+        <el-select
+          v-model="queryParams.appId"
+          placeholder="应用系统"
+          clearable
+          size="small"
+          style="width: 240px"
+        >
+          <el-option
+            v-for="dict in appOptions.values"
+            :key="dict.key"
+            :label="dict.value"
+            :value="dict.key"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="字典名称" prop="dictName">
         <el-input
           v-model="queryParams.dictName"
@@ -88,6 +104,8 @@
 
     <el-table v-loading="loading" :data="typeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
+     
+      <el-table-column label="应用系统" align="center" prop="appId" :formatter="appFormat" />
       <el-table-column label="字典ID" align="center" prop="dictId" />
       <el-table-column label="字典名称" align="center" prop="dictName" :show-overflow-tooltip="true" />
       <el-table-column label="字典类型" align="center" :show-overflow-tooltip="true">
@@ -130,6 +148,17 @@
     <!-- 添加或修改参数配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+     
+         <el-form-item label="应用系统" prop="appId">
+          <el-radio-group v-model="form.appId">
+            <el-radio
+              v-for="dict in appOptions.values"
+              :key="dict.key"
+              :label="dict.key"
+            >{{dict.value}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
         <el-form-item label="字典名称" prop="dictName">
           <el-input v-model="form.dictName" placeholder="请输入字典名称" />
         </el-form-item>
@@ -182,12 +211,15 @@ export default {
       open: false,
       // 状态数据字典
       statusOptions: [],
+      // 应用系统 数据字典
+      appOptions: [],
       // 日期范围
       dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        appId:undefined,
         dictName: undefined,
         dictType: undefined,
         status: undefined
@@ -209,6 +241,10 @@ export default {
     this.getDicts("sys_normal_disable").then(response => {
       this.statusOptions = response.data;
     });
+    this.getDicts("app_id").then(response => {
+      this.appOptions = response.data;
+    });
+    console.log(this.appOptions);
     this.getList();
   },
   methods: {
@@ -226,6 +262,10 @@ export default {
     statusFormat(row, column) {
       return this.selectDictLabel(this.statusOptions.values, row.status);
     },
+    // 应用系统 字典翻译
+    appFormat(row, column) {
+      return this.selectDictLabel(this.appOptions.values, row.appId);
+    },
     // 取消按钮
     cancel() {
       this.open = false;
@@ -237,6 +277,7 @@ export default {
         dictId: undefined,
         dictName: undefined,
         dictType: undefined,
+        appId : undefined,
         status: "1",
         remark: undefined
       };
@@ -245,6 +286,7 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
+      // console.log(this.queryParams);
       this.getList();
     },
     /** 重置按钮操作 */
@@ -275,7 +317,8 @@ export default {
           dictName: response.data.dictName,
           dictType: response.data.dictType,
           status: ""+response.data.status,
-          remark: response.data.remark
+          remark: response.data.remark,
+          appId: response.data.appId,
         };
         this.open = true;
         this.title = "修改字典类型";

@@ -50,6 +50,8 @@
       <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
       <el-table-column prop="status" label="状态" :formatter="statusFormat" width="100"></el-table-column>
       <el-table-column label="创建时间" align="center" prop="createdAt" width="200" />
+      <el-table-column label="修改时间" align="center" prop="updatedAt" width="200" />
+      <el-table-column label="修改人" align="center" prop="updatedBy" width="200" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
