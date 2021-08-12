@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      title: 'gfast2.0管理系统',
+      title: '后台管理系统',
       logo: logoImg
     }
   }

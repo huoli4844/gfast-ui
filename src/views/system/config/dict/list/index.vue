@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
-      <el-form-item label="应用系统" prop="appId">
+      <el-form-item label="系统类型" prop="appId">
         <el-select
           v-model="queryParams.appId"
-          placeholder="应用系统"
+          placeholder="系统类型"
           clearable
           size="small"
           style="width: 240px"
@@ -105,7 +105,7 @@
     <el-table v-loading="loading" :data="typeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
      
-      <el-table-column label="应用系统" align="center" prop="appId" :formatter="appFormat" />
+      <el-table-column label="系统类型" align="center" prop="appId" :formatter="appFormat" />
       <el-table-column label="字典ID" align="center" prop="dictId" />
       <el-table-column label="字典名称" align="center" prop="dictName" :show-overflow-tooltip="true" />
       <el-table-column label="字典类型" align="center" :show-overflow-tooltip="true">
@@ -233,6 +233,9 @@ export default {
         ],
         dictType: [
           { required: true, message: "字典类型不能为空", trigger: "blur" }
+        ],
+        appId: [
+          { required: true, message: "系统类型不能为空", trigger: "blur" }
         ]
       }
     };
@@ -244,7 +247,7 @@ export default {
     this.getDicts("app_id").then(response => {
       this.appOptions = response.data;
     });
-    console.log(this.appOptions);
+    // console.log(this.appOptions);
     this.getList();
   },
   methods: {
@@ -253,6 +256,7 @@ export default {
       this.loading = true;
       listType(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
           this.typeList = response.data.list;
+          console.log(this.typeList);
           this.total = response.data.total;
           this.loading = false;
         }
@@ -262,7 +266,7 @@ export default {
     statusFormat(row, column) {
       return this.selectDictLabel(this.statusOptions.values, row.status);
     },
-    // 应用系统 字典翻译
+    // 系统类型 字典翻译
     appFormat(row, column) {
       return this.selectDictLabel(this.appOptions.values, row.appId);
     },

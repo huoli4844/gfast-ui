@@ -1,6 +1,23 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+      <el-form-item label="系统类型" prop="appId">
+        <el-select
+          v-model="queryParams.appId"
+          placeholder="系统类型"
+          clearable
+          size="small"
+          style="width: 240px"
+        >
+          <el-option
+            v-for="dict in appOptions.values"
+            :key="dict.key"
+            :label="dict.value"
+            :value="dict.key"
+          />
+        </el-select>
+      </el-form-item>
+      
       <el-form-item label="参数名称" prop="configName">
         <el-input
           v-model="queryParams.configName"
@@ -21,7 +38,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="系统内置" prop="configType">
+      <!-- <el-form-item label="系统内置" prop="configType">
         <el-select v-model="queryParams.configType" placeholder="系统内置" clearable size="small">
           <el-option
             v-for="dict in typeOptions.values"
@@ -30,8 +47,8 @@
             :value="dict.key"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间">
+      </el-form-item> -->
+      <!-- <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
           size="small"
@@ -42,7 +59,7 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         ></el-date-picker>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -88,6 +105,7 @@
 
     <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="系统类型" align="center" prop="appId" :formatter="appFormat" />
       <el-table-column label="参数主键" align="center" prop="configId" />
       <el-table-column label="参数名称" align="center" prop="configName" :show-overflow-tooltip="true" />
       <el-table-column label="参数键名" align="center" prop="configKey" :show-overflow-tooltip="true" />
@@ -124,6 +142,16 @@
     <!-- 添加或修改参数配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+          <el-form-item label="应用系统" prop="appId">
+          <el-radio-group v-model="form.appId">
+            <el-radio
+              v-for="dict in appOptions.values"
+              :key="dict.key"
+              :label="dict.key"
+            >{{dict.value}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
         <el-form-item label="参数名称" prop="configName">
           <el-input v-model="form.configName" placeholder="请输入参数名称" />
         </el-form-item>
@@ -179,12 +207,15 @@ export default {
       open: false,
       // 类型数据字典
       typeOptions: [],
+      // 应用系统 数据字典
+      appOptions: [],
       // 日期范围
       dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        appId:undefined,
         configName: undefined,
         configKey: undefined,
         configType: undefined
@@ -201,6 +232,9 @@ export default {
         ],
         configValue: [
           { required: true, message: "参数键值不能为空", trigger: "blur" }
+        ],
+        appId: [
+          { required: true, message: "系统类型不能为空", trigger: "blur" }
         ]
       }
     };
@@ -208,6 +242,9 @@ export default {
   created() {
     this.getDicts("sys_yes_no").then(response => {
       this.typeOptions = response.data;
+    });
+    this.getDicts("app_id").then(response => {
+      this.appOptions = response.data;
     });
     this.getList();
   },
@@ -226,6 +263,10 @@ export default {
     typeFormat(row, column) {
       return this.selectDictLabel(this.typeOptions.values, row.configType);
     },
+        // 系统类型 字典翻译
+    appFormat(row, column) {
+      return this.selectDictLabel(this.appOptions.values, row.appId);
+    },
     // 取消按钮
     cancel() {
       this.open = false;
@@ -238,6 +279,7 @@ export default {
         configName: undefined,
         configKey: undefined,
         configValue: undefined,
+        appId : undefined,
         configType: "1",
         remark: undefined
       };
@@ -277,6 +319,7 @@ export default {
           configKey: response.data.configKey,
           configValue: response.data.configValue,
           configType: ""+response.data.configType,
+          appId: response.data.appId,
           remark: response.data.remark
         };
         this.open = true;
