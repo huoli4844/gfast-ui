@@ -60,3 +60,14 @@ export function exportConfig(query) {
     params: query
   })
 }
+
+// 同步数据到公司参数表
+export function syncData(query) {
+  return request({
+    url: '/system/config/sysConfig/syncData',
+    method: 'post',
+    params: query
+  })
+}
+
+
