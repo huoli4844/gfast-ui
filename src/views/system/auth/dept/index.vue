@@ -1,17 +1,17 @@
 <template>
   <div class="app-container">
     <el-form :inline="true">
-      <el-form-item label="部门名称">
+      <el-form-item label="公司/部门名称">
         <el-input
           v-model="queryParams.deptName"
-          placeholder="请输入部门名称"
+          placeholder="请输入公司/部门名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="状态">
-        <el-select v-model="queryParams.status" placeholder="部门状态" clearable size="small">
+        <el-select v-model="queryParams.status" placeholder="公司/部门状态" clearable size="small">
           <el-option
             v-for="dict in statusOptions"
             :key="dict.key"
@@ -46,7 +46,8 @@
       default-expand-all
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="deptName" label="部门名称" width="260"></el-table-column>
+      <el-table-column prop="deptName" label="公司/部门名称" width="260"></el-table-column>
+        <el-table-column prop="deptId" label="公司/部门ID" width="260"></el-table-column>
       <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
       <el-table-column prop="status" label="状态" :formatter="statusFormat" width="100"></el-table-column>
       <el-table-column label="创建时间" align="center" prop="createdAt" width="200" />
@@ -83,12 +84,12 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24" v-if="form.parentId !== 0">
-            <el-form-item label="上级部门" prop="parentId">
-              <treeselect v-model="form.parentId" :options="deptOptions" :normalizer="normalizer" placeholder="选择上级部门" />
+            <el-form-item label="上级公司/部门" prop="parentId">
+              <treeselect v-model="form.parentId" :options="deptOptions" :normalizer="normalizer" placeholder="选择上级公司/部门" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="部门名称" prop="deptName">
+            <el-form-item label="公司/部门名称" prop="deptName">
               <el-input v-model="form.deptName" placeholder="请输入部门名称" />
             </el-form-item>
           </el-col>
@@ -113,7 +114,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="部门状态">
+            <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio
                   v-for="dict in statusOptions"
