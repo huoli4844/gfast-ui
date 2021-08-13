@@ -70,6 +70,7 @@
       <el-table-column label="字典标签" align="center" prop="dictLabel" />
       <el-table-column label="字典键值" align="center" prop="dictValue" />
       <el-table-column label="字典排序" align="center" prop="dictSort" />
+      <el-table-column label="图标" align="center" prop="pic" />
       <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat" />
       <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
       <el-table-column label="创建时间" align="center" prop="createdAt" width="180"/>
@@ -114,7 +115,9 @@
         <el-form-item label="显示排序" prop="dictSort">
           <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
         </el-form-item>
-
+        <el-form-item label="图标" prop="pic">
+          <el-input-number v-model="form.pic" />
+        </el-form-item>
         <el-form-item label="系统默认">
             <el-switch v-model="form.isDefault"
                 active-text="是"
