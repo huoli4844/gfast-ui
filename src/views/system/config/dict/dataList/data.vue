@@ -70,7 +70,13 @@
       <el-table-column label="字典标签" align="center" prop="dictLabel" />
       <el-table-column label="字典键值" align="center" prop="dictValue" />
       <el-table-column label="字典排序" align="center" prop="dictSort" />
-      <el-table-column label="图标" align="center" prop="pic" />
+         <el-table-column align="center" label="缩略图" width="100">
+      <template slot-scope="scope">
+        <img v-if="scope.row.pic!=''" :src="scope.row.pic|urlCorrection"
+             style="width: 60px; "
+        >
+      </template>
+      </el-table-column>  
       <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat" />
       <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
       <el-table-column label="创建时间" align="center" prop="createdAt" width="180"/>
@@ -115,9 +121,23 @@
         <el-form-item label="显示排序" prop="dictSort">
           <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
         </el-form-item>
+       
         <el-form-item label="图标" prop="pic">
-          <el-input-number v-model="form.pic" />
-        </el-form-item>
+         <el-upload
+           v-loading="upLoadingImg"
+           :action="apiUrl+'/system/upload/upImg'"
+           :before-upload="beforeAvatarUploadImg"
+           :data="setUpData()"
+           :on-success="handleAvatarSuccessImg"
+           :show-file-list="false"
+           class="avatar-uploader"
+           name="file"
+         >
+           <img v-if="imageUrlImg" :src="imageUrlImg" class="avatar">
+           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+         </el-upload>
+       </el-form-item>    
+
         <el-form-item label="系统默认">
             <el-switch v-model="form.isDefault"
                 active-text="是"
@@ -150,13 +170,22 @@
 
 <script>
 import { listData, getData, delData, addData, updateData, exportData } from "@/api/system/dict/data";
-
+import upImgs from "@/components/upImgs";
+import { getToken } from '@/utils/auth'
 export default {
+  components:{    
+    upImgs,    
+  },
   name: "Data",
   data() {
     return {
       // 遮罩层
       loading: true,
+      //图片上传地址
+       imageUrlImg: '',
+       //上传加载
+       upLoadingImg: false,      
+
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -183,6 +212,7 @@ export default {
         pageSize: 10,
         dictName: undefined,
         dictType: undefined,
+        img: undefined,
         status: undefined
       },
       // 表单参数
@@ -210,11 +240,36 @@ export default {
     this.getList();
   },
   methods: {
+    //单图上传单图
+    handleAvatarSuccessImg(res, file) {
+      if (res.code === 0) {
+        this.imageUrlImg = URL.createObjectURL(file.raw)
+        this.form.pic = res.data.fileInfo.fileUrl
+      } else {
+        this.msgError(res.msg)
+      }
+      this.upLoadingImg = false
+    },
+    beforeAvatarUploadImg(file) {
+      this.upLoadingImg = true
+      return true
+    },   
+
+    setUpData() {
+      return { token: getToken() }
+    },    
+
+
+
     /** 查询字典数据列表 */
     getList() {
       this.loading = true;
       listData(this.queryParams).then(response => {
+        
         this.dataList = response.data.list;
+        
+      //  console.log(this.dataList);
+
         this.total = response.data.total;
         this.loading = false;
       });
@@ -237,6 +292,8 @@ export default {
         dictSort: 0,
         isDefault:"0",
         status: "1",
+        imageUrlImg:"",
+        pic:"",
         remark: undefined
       };
       this.resetForm("form");
@@ -271,6 +328,9 @@ export default {
       const dictCode = row.dictCode || this.ids
       getData(dictCode).then(response => {
         this.form = {
+           //单图地址赋值
+          // imageUrlImg : response.data.pic ? this.getUpFileUrl(process.env.VUE_APP_BASE_API,response.data.pic) : '' ,       
+          pic:response.data.pic ? this.getUpFileUrl(process.env.VUE_APP_BASE_API,response.data.pic) : '' ,   
           dictType:response.data.dictType,
           dictCode: response.data.dictCode,
           dictLabel: response.data.dictLabel,
@@ -342,3 +402,34 @@ export default {
   }
 };
 </script>
+
+<style>
+
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+
+</style>
