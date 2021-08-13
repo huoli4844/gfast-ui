@@ -176,29 +176,34 @@
       :close-on-click-modal="false"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="组织机构id 就是部门ID" prop="deptId">
+        <el-form-item label="组织机构" prop="deptId">
           <el-input
             v-model="form.deptId"
-            placeholder="请输入组织机构id 就是部门ID"
+            readonly="ture"
+            placeholder="请输入组织机构"
           />
         </el-form-item>
 
         <el-form-item label="参数主键" prop="configId">
-          <el-input v-model="form.configId" placeholder="请输入参数主键" />
+          <el-input v-model="form.configId"  readonly="ture" placeholder="请输入参数主键" />
         </el-form-item>
 
         <el-form-item label="参数名称" prop="configName">
-          <el-input v-model="form.configName" placeholder="请输入参数名称" />
+          <el-input v-model="form.configName"    readonly="ture" placeholder="请输入参数名称" />
         </el-form-item>
 
         <el-form-item label="参数键名" prop="configKey">
-          <el-input v-model="form.configKey" placeholder="请输入参数键名" />
+          <el-input v-model="form.configKey"   readonly="ture" placeholder="请输入参数键名" />
         </el-form-item>
 
         <el-form-item label="参数键值" prop="configValue">
           <el-input v-model="form.configValue" placeholder="请输入参数键值" />
         </el-form-item>
 
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" placeholder="请输入备注" />
+        </el-form-item>
+<!-- 
         <el-form-item label="系统内置（Y是 N否）" prop="configType">
           <el-select
             v-model="form.configType"
@@ -214,12 +219,9 @@
 
         <el-form-item label="更新者" prop="updateBy">
           <el-input v-model="form.updateBy" placeholder="请输入更新者" />
-        </el-form-item>
+        </el-form-item> -->
 
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注" />
-        </el-form-item>
-
+<!-- 
         <el-form-item label="系统类型" prop="appId">
           <el-select v-model="form.appId" placeholder="请选择系统类型">
             <el-option
@@ -233,7 +235,7 @@
 
         <el-form-item label="系统名称" prop="appName">
           <el-input v-model="form.appName" placeholder="请输入系统名称" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -399,7 +401,7 @@ export default {
 
         this.form = data;
         this.open = true;
-        this.title = "修改公司参数管理";
+        this.title = "修改参数";
       });
     },
     /** 提交按钮 */
